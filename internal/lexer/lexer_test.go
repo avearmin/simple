@@ -19,6 +19,7 @@ func TestParse(t *testing.T) {
 				{token.LParen, "("},
 				{token.Assign, ":="},
 				{token.Ident, "foo"},
+				{token.Int, "1"},
 				{token.RParen, ")"},
 				{token.LParen, "("},
 				{token.Reassign, "="},

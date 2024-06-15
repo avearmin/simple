@@ -24,6 +24,10 @@ type Token struct {
 	Literal string
 }
 
-func New(tokType Type, char byte) Token {
+func NewFromByte(tokType Type, char byte) Token {
 	return Token{Type: tokType, Literal: string(char)}
+}
+
+func NewFromString(tokType Type, str string) Token {
+	return Token{Type: tokType, Literal: str}
 }
