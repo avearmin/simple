@@ -46,9 +46,10 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			op := string(l.input[pos:l.pos])
 			tok = token.NewFromString(token.Assign, op)
-
 			return tok
 		}
+	case 0:
+		tok = token.NewFromString(token.EOF, "")
 	default:
 		if isLetter(l.char) {
 			ident := l.readIdent()

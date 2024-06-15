@@ -30,6 +30,7 @@ func TestParse(t *testing.T) {
 				{token.Int, "1"},
 				{token.RParen, ")"},
 				{token.RParen, ")"},
+				{token.EOF, ""},
 			},
 		},
 	}
