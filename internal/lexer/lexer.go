@@ -1,6 +1,9 @@
 package lexer
 
-import "github.com/avearmin/simple/internal/token"
+import (
+	"fmt"
+	"github.com/avearmin/simple/internal/token"
+)
 
 type Lexer struct {
 	input   string
@@ -27,9 +30,7 @@ func (l *Lexer) readChar() {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
-
-	l.consumeWhitespaces()
-
+	fmt.Println("|" + string(l.char) + "|")
 	switch l.char {
 	case '(':
 		tok = token.NewFromByte(token.LParen, l.char)
@@ -44,48 +45,70 @@ func (l *Lexer) NextToken() token.Token {
 			pos := l.pos
 			l.readChar()
 			l.readChar()
-			op := string(l.input[pos:l.pos])
+			op := l.input[pos:l.pos]
 			tok = token.NewFromString(token.Assign, op)
 			return tok
 		}
 	case 0:
 		tok = token.NewFromString(token.EOF, "")
 	default:
-		if isLetter(l.char) {
-			ident := l.readIdent()
-			return token.NewFromString(token.Ident, ident)
-		} else if isDigit(l.char) {
-			num := l.readNumber()
-			return token.NewFromString(token.Int, num)
-		} else {
-			return token.NewFromByte(token.Illegal, l.char)
+		if isWhitespace(l.char) {
+			delimiter := l.readWhitespaces()
+			tok = token.NewFromString(token.Delimiter, delimiter)
+			return tok
 		}
+
+		ident := l.readIdent()
+		if isIdentInt(ident) {
+			tok = token.NewFromString(token.Int, ident)
+		} else if isIdentValid(ident) {
+			tok = token.NewFromString(token.Ident, ident)
+		} else {
+			tok = token.NewFromString(token.Illegal, ident)
+		}
+		return tok
 	}
 
 	l.readChar()
 	return tok
 }
 
-func (l *Lexer) consumeWhitespaces() {
-	for l.char == ' ' || l.char == '\n' || l.char == '\t' || l.char == '\r' {
+func (l *Lexer) readWhitespaces() string {
+	pos := l.pos
+	for isWhitespace(l.char) {
 		l.readChar()
 	}
+	return l.input[pos:l.pos]
 }
 
 func (l *Lexer) readIdent() string {
 	pos := l.pos
-	for isLetter(l.char) {
+	for !isWhitespace(l.char) && l.char != ')' {
 		l.readChar()
 	}
 	return l.input[pos:l.pos]
 }
 
-func (l *Lexer) readNumber() string {
-	pos := l.pos
-	for isDigit(l.char) {
-		l.readChar()
+func isIdentInt(ident string) bool {
+	for _, c := range []byte(ident) {
+		if !isDigit(c) {
+			return false
+		}
 	}
-	return l.input[pos:l.pos]
+	return true
+}
+
+func isIdentValid(ident string) bool {
+	for _, c := range []byte(ident) {
+		if !isLetter(c) {
+			return false
+		}
+	}
+	return true
+}
+
+func isWhitespace(char byte) bool {
+	return char == ' ' || char == '\t' || char == '\n' || char == '\r'
 }
 
 func isLetter(char byte) bool {

@@ -6,6 +6,8 @@ const (
 	Illegal = "ILLEGAL"
 	EOF     = "EOF"
 
+	Delimiter = "DELIMITER"
+
 	LParen = "("
 	RParen = ")"
 
