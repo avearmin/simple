@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"github.com/avearmin/simple/internal/token"
 )
 
@@ -30,7 +29,7 @@ func (l *Lexer) readChar() {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
-	fmt.Println("|" + string(l.char) + "|")
+
 	switch l.char {
 	case '(':
 		tok = token.NewFromByte(token.LParen, l.char)
