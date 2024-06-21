@@ -30,17 +30,35 @@ func (p *Program) TokenLiteral() string {
 
 type AssignStatement struct {
 	Token token.Token
-	Name  *Identifier
+	Name  Atom
 	Value Expression
 }
 
-func (as *AssignStatement) statementNode()       {}
-func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
+func (as AssignStatement) statementNode()       {}
+func (as AssignStatement) TokenLiteral() string { return as.Token.Literal }
 
-type Identifier struct {
+type ReassignStatement struct {
+	Token token.Token
+	Name  Atom
+	Value Expression
+}
+
+func (rs ReassignStatement) statementNode()       {}
+func (rs ReassignStatement) TokenLiteral() string { return rs.Token.Literal }
+
+type Atom struct {
 	Token token.Token
 	Value string
 }
 
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+func (a Atom) expressionNode()      {}
+func (a Atom) TokenLiteral() string { return a.Token.Literal }
+
+type BinaryExpression struct {
+	Token  token.Token
+	First  Expression
+	Second Expression
+}
+
+func (be BinaryExpression) expressionNode()      {}
+func (be BinaryExpression) TokenLiteral() string { return be.Token.Literal }
