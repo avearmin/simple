@@ -10,7 +10,6 @@ import (
 
 type Parser struct {
 	l         *lexer.Lexer
-	errors    []string
 	curToken  token.Token
 	peekToken token.Token
 }
@@ -29,27 +28,28 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 }
 
-func (p *Parser) ParseProgram() *ast.Program {
+func (p *Parser) ParseProgram() (*ast.Program, error) {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
 	for p.curToken.Type != token.EOF {
-		stmt := p.parseStatement()
-		if stmt != nil {
-			program.Statements = append(program.Statements, stmt)
+		stmt, err := p.parseStatement()
+		if err != nil {
+			return nil, err
 		}
+
+		program.Statements = append(program.Statements, stmt)
 
 		p.nextToken()
 	}
 
-	return program
+	return program, nil
 }
 
-func (p *Parser) parseStatement() ast.Statement {
+func (p *Parser) parseStatement() (ast.Statement, error) {
 	if !p.expectCur(token.LParen) {
-		err := fmt.Sprintf("expected token '(', but got '%s'", p.curToken.Type)
-		p.errors = append(p.errors, err)
-		return nil
+		return nil, fmt.Errorf("expected token '(' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.curToken.Type)
 	}
 	p.nextToken()
 
@@ -57,12 +57,12 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.Assign:
 		stmt, err := p.parseAssignStatement()
 		if err != nil {
-			p.errors = append(p.errors, err.Error())
-			return nil
+			return nil, err
 		}
-		return stmt
+		return stmt, nil
 	default:
-		return nil
+		return nil, fmt.Errorf("cannot begin statement with token '%s' on line %d col %d",
+			p.curToken.Type, p.curToken.Line, p.curToken.Col)
 	}
 }
 
@@ -70,29 +70,122 @@ func (p *Parser) parseAssignStatement() (ast.AssignStatement, error) {
 	stmt := ast.AssignStatement{Token: p.curToken}
 
 	if !p.expectPeek(token.Delimiter) {
-		return ast.AssignStatement{}, fmt.Errorf("expected token 'DELIMITER', but got '%s'", p.peekToken.Type)
+		return ast.AssignStatement{}, fmt.Errorf("expected token 'DELIMITER' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
 	}
 	p.nextToken()
 
 	if !p.expectPeek(token.Ident) {
-		return ast.AssignStatement{}, fmt.Errorf("expected token 'IDENT', but got '%s'", p.peekToken.Type)
+		return ast.AssignStatement{}, fmt.Errorf("expected token 'IDENT' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
 	}
 	p.nextToken()
 
-	stmt.Name = ast.Atom{Token: p.curToken, Value: p.curToken.Literal}
+	stmt.Name = p.parseAtomExpression()
 
 	if !p.expectPeek(token.Delimiter) {
-		return ast.AssignStatement{}, fmt.Errorf("expected token 'DELIMITER', but got '%s'", p.peekToken.Type)
+		return ast.AssignStatement{}, fmt.Errorf("expected token 'DELIMITER' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
 	}
 	p.nextToken()
+	p.nextToken()
 
-	stmt.Value = p.parseExpression() // TODO: ADD THIS FUNCTION
+	exp, err := p.parseExpression()
+	if err != nil {
+		return ast.AssignStatement{}, err
+	}
+	stmt.Value = exp
 
 	if !p.expectCur(token.RParen) {
-		return ast.AssignStatement{}, fmt.Errorf("expected token ')', but got '%s'", p.peekToken.Type)
+		return ast.AssignStatement{}, fmt.Errorf("expected token ')' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
 	}
 
 	return stmt, nil
+}
+
+// expressions are either lists, or atoms
+func (p *Parser) parseExpression() (ast.Expression, error) {
+	switch p.curToken.Type {
+	case token.LParen:
+		p.nextToken() // advance off the RParen token
+		exp, err := p.parseListExpression()
+		if err != nil {
+			return nil, err
+		}
+		return exp, nil
+	case token.Ident, token.Int:
+		return p.parseAtomExpression(), nil
+	default:
+		err := fmt.Errorf("Unexpected token '%s' on line %d col %d",
+			p.curToken.Type, p.curToken.Line, p.curToken.Col)
+		return nil, err
+	}
+}
+
+func (p *Parser) parseListExpression() (ast.Expression, error) {
+	switch p.curToken.Type {
+	case "+":
+		exp, err := p.parseBinaryExpression()
+		if err != nil {
+			return nil, err
+		}
+		return exp, nil
+	default:
+		return nil, fmt.Errorf("Unexpected token on line %d col %d in list expression '%s'",
+			p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+}
+
+func (p *Parser) parseBinaryExpression() (ast.BinaryExpression, error) {
+	var binaryExp ast.BinaryExpression
+	switch p.curToken.Type {
+	case "+":
+		binaryExp.Token = p.curToken
+	default:
+		return ast.BinaryExpression{}, fmt.Errorf("Expected tokens '+' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+
+	if !p.expectPeek(token.Delimiter) {
+		return ast.BinaryExpression{}, fmt.Errorf("Expected token 'DELIMITER on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+	p.nextToken()
+
+	expOne, err := p.parseExpression()
+	if err != nil {
+		return ast.BinaryExpression{}, err
+	}
+
+	if !p.expectPeek(token.Delimiter) {
+		return ast.BinaryExpression{}, fmt.Errorf("Expected token 'DELIMITER on line %d col %d, but got '%s'",
+			p.peekToken.Line, p.peekToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+	p.nextToken()
+
+	expTwo, err := p.parseExpression()
+	if err != nil {
+		return ast.BinaryExpression{}, err
+	}
+
+	if !p.expectPeek(token.RParen) {
+		return ast.BinaryExpression{}, fmt.Errorf("expected token ')' on line %d col %d, but got '%s'",
+			p.peekToken.Line, p.peekToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+	p.nextToken()
+
+	binaryExp.First = expOne
+	binaryExp.Second = expTwo
+
+	return binaryExp, nil
+}
+
+func (p *Parser) parseAtomExpression() ast.Atom {
+	return ast.Atom{Token: p.curToken, Value: p.curToken.Literal}
 }
 
 func (p *Parser) expectCur(tokType token.Type) bool {

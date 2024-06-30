@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/avearmin/simple/internal/ast"
@@ -18,18 +19,20 @@ func TestParseProgram(t *testing.T) {
 			want: &ast.Program{
 				Statements: []ast.Statement{
 					ast.AssignStatement{
-						Token: token.Token{Type: token.Assign, Literal: ":="},
+						Token: token.Token{Type: token.Assign, Literal: ":=", Line: 1, Col: 1},
 						Name: ast.Atom{
-							Token: token.Token{Type: token.Ident, Literal: "foo"},
+							Token: token.Token{Type: token.Ident, Literal: "foo", Line: 1, Col: 4},
 							Value: "foo",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.Add, Literal: "+"},
+							Token: token.Token{Type: token.Add, Literal: "+", Line: 1, Col: 9},
 							First: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "1"},
+								Token: token.Token{Type: token.Int, Literal: "1", Line: 1, Col: 11},
+								Value: "1",
 							},
 							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2"},
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 1, Col: 13},
+								Value: "2",
 							},
 						},
 					},
@@ -43,26 +46,29 @@ func TestParseProgram(t *testing.T) {
 			l := lexer.New(test.input)
 			p := New(l)
 
-			program := p.ParseProgram()
-			if !isEqualPrograms(program, test.want) {
-				t.Fail()
+			program, err := p.ParseProgram()
+			if err != nil {
+				t.Fatalf("Parsing failed with error: %s", err)
+			}
+			if err := isEqualPrograms(program, test.want); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}
 }
 
-func isEqualPrograms(first, second *ast.Program) bool {
+func isEqualPrograms(first, second *ast.Program) error {
 	if len(first.Statements) != len(second.Statements) {
-		return false
+		return fmt.Errorf("expected statements len=%d, but got=%d", len(second.Statements), len(first.Statements))
 	}
 
 	for i := range first.Statements {
 		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
-			return false
+			return fmt.Errorf("expected statement=%v, but got=%v", second.Statements[i], first.Statements[i])
 		}
 	}
 
-	return true
+	return nil
 }
 
 func isEqualStatements(first, second ast.Statement) bool {
