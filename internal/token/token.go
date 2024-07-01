@@ -16,7 +16,11 @@ const (
 	Assign   = ":="
 	Reassign = "="
 
-	Add = "+"
+	Add      = "+"
+	Subtract = "-"
+	Divide   = "/"
+	Multiply = "*"
+	Modulo   = "%"
 
 	Ident = "IDENT"
 )
