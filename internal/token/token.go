@@ -23,7 +23,9 @@ const (
 	Multiply = "*"
 	Modulo   = "%"
 
+	Not                 = "!"
 	Equals              = "=="
+	NotEquals           = "!="
 	LessThan            = "<"
 	GreaterThan         = ">"
 	LessThanOrEquals    = "<="
