@@ -56,6 +56,14 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.NewFromByte(token.RParen, l.char, line, col)
 	case '+':
 		tok = token.NewFromByte(token.Add, l.char, line, col)
+	case '-':
+		tok = token.NewFromByte(token.Subtract, l.char, line, col)
+	case '/':
+		tok = token.NewFromByte(token.Divide, l.char, line, col)
+	case '*':
+		tok = token.NewFromByte(token.Multiply, l.char, line, col)
+	case '%':
+		tok = token.NewFromByte(token.Modulo, l.char, line, col)
 	case '=':
 		tok = token.NewFromByte(token.Reassign, l.char, line, col)
 	case ':':
