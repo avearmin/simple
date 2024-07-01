@@ -23,6 +23,12 @@ const (
 	Multiply = "*"
 	Modulo   = "%"
 
+	Equals              = "=="
+	LessThan            = "<"
+	GreaterThan         = ">"
+	LessThanOrEquals    = "<="
+	GreaterThanOrEquals = ">="
+
 	Ident = "IDENT"
 )
 
