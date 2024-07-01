@@ -160,6 +160,28 @@ func TestParse(t *testing.T) {
 				{token.EOF, "", 1, 16},
 			},
 		},
+		"boolean assign/reassign": {
+			input: `(:= foo false)
+(= foo true)`,
+			want: []token.Token{
+				{token.LParen, "(", 1, 0},
+				{token.Assign, ":=", 1, 1},
+				{token.Delimiter, " ", 1, 3},
+				{token.Ident, "foo", 1, 4},
+				{token.Delimiter, " ", 1, 7},
+				{token.Bool, "false", 1, 8},
+				{token.RParen, ")", 1, 13},
+				{token.Delimiter, "\n", 1, 14},
+				{token.LParen, "(", 2, 0},
+				{token.Reassign, "=", 2, 1},
+				{token.Delimiter, " ", 2, 2},
+				{token.Ident, "foo", 2, 3},
+				{token.Delimiter, " ", 2, 6},
+				{token.Bool, "true", 2, 7},
+				{token.RParen, ")", 2, 11},
+				{token.EOF, "", 2, 11},
+			},
+		},
 	}
 
 	for name, test := range tests {

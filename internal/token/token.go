@@ -11,7 +11,8 @@ const (
 	LParen = "("
 	RParen = ")"
 
-	Int = "INT"
+	Int  = "INT"
+	Bool = "BOOL"
 
 	Assign   = ":="
 	Reassign = "="
