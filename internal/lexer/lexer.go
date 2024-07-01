@@ -64,8 +64,58 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.NewFromByte(token.Multiply, l.char, line, col)
 	case '%':
 		tok = token.NewFromByte(token.Modulo, l.char, line, col)
+	case '!':
+		if l.input[l.nextPos] == '=' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			notEqualsOp := l.input[pos:l.pos]
+			tok = token.NewFromString(token.NotEquals, notEqualsOp, line, col)
+			return tok
+		} else if isWhitespace(l.input[l.nextPos]) {
+			tok = token.NewFromByte(token.Not, l.char, line, col)
+		}
+	case '<':
+		if l.input[l.nextPos] == '=' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			lessThanOrEqualsOP := l.input[pos:l.pos]
+			tok = token.NewFromString(token.LessThanOrEquals, lessThanOrEqualsOP, line, col)
+			return tok
+		} else if isWhitespace(l.input[l.nextPos]) {
+			tok = token.NewFromByte(token.LessThan, l.char, line, col)
+		}
+	case '>':
+		if l.input[l.nextPos] == '=' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			greaterThanOrEqualsOP := l.input[pos:l.pos]
+			tok = token.NewFromString(token.GreaterThanOrEquals, greaterThanOrEqualsOP, line, col)
+			return tok
+		} else if isWhitespace(l.input[l.nextPos]) {
+			tok = token.NewFromByte(token.GreaterThan, l.char, line, col)
+		}
 	case '=':
-		tok = token.NewFromByte(token.Reassign, l.char, line, col)
+		if l.input[l.nextPos] == '=' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			equalsOp := l.input[pos:l.pos]
+			tok = token.NewFromString(token.Equals, equalsOp, line, col)
+			return tok
+		} else if isWhitespace(l.input[l.nextPos]) {
+			tok = token.NewFromByte(token.Reassign, l.char, line, col)
+		}
 	case ':':
 		if l.input[l.nextPos] == '=' {
 			pos := l.pos
@@ -73,8 +123,8 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			l.readChar()
 
-			op := l.input[pos:l.pos]
-			tok = token.NewFromString(token.Assign, op, line, col)
+			assignOp := l.input[pos:l.pos]
+			tok = token.NewFromString(token.Assign, assignOp, line, col)
 			return tok
 		}
 	case ' ', '\t', '\n', '\r':

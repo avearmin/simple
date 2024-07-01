@@ -160,9 +160,12 @@ func TestParse(t *testing.T) {
 				{token.EOF, "", 1, 16},
 			},
 		},
-		"boolean assign/reassign": {
+		"boolean assign/reassign with logical operators": {
 			input: `(:= foo false)
-(= foo true)`,
+(= foo true)
+(! foo)
+(== foo true)
+(!= foo true)`,
 			want: []token.Token{
 				{token.LParen, "(", 1, 0},
 				{token.Assign, ":=", 1, 1},
@@ -179,7 +182,29 @@ func TestParse(t *testing.T) {
 				{token.Delimiter, " ", 2, 6},
 				{token.Bool, "true", 2, 7},
 				{token.RParen, ")", 2, 11},
-				{token.EOF, "", 2, 11},
+				{token.Delimiter, "\n", 2, 12},
+				{token.LParen, "(", 3, 0},
+				{token.Not, "!", 3, 1},
+				{token.Delimiter, " ", 3, 2},
+				{token.Ident, "foo", 3, 3},
+				{token.RParen, ")", 3, 6},
+				{token.Delimiter, "\n", 3, 7},
+				{token.LParen, "(", 4, 0},
+				{token.Equals, "==", 4, 1},
+				{token.Delimiter, " ", 4, 3},
+				{token.Ident, "foo", 4, 4},
+				{token.Delimiter, " ", 4, 7},
+				{token.Bool, "true", 4, 8},
+				{token.RParen, ")", 4, 12},
+				{token.Delimiter, "\n", 4, 13},
+				{token.LParen, "(", 5, 0},
+				{token.NotEquals, "!=", 5, 1},
+				{token.Delimiter, " ", 5, 3},
+				{token.Ident, "foo", 5, 4},
+				{token.Delimiter, " ", 5, 7},
+				{token.Bool, "true", 5, 8},
+				{token.RParen, ")", 5, 12},
+				{token.EOF, "", 5, 12},
 			},
 		},
 	}
