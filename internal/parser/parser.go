@@ -47,6 +47,9 @@ func (p *Parser) ParseProgram() (*ast.Program, error) {
 }
 
 func (p *Parser) parseStatement() (ast.Statement, error) {
+	if p.expectCur(token.Delimiter) {
+		p.nextToken()
+	}
 	if !p.expectCur(token.LParen) {
 		return nil, fmt.Errorf("expected token '(' on line %d col %d, but got '%s'",
 			p.curToken.Line, p.curToken.Col, p.curToken.Type)
@@ -56,6 +59,12 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 	switch p.curToken.Type {
 	case token.Assign:
 		stmt, err := p.parseAssignStatement()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	case token.Reassign:
+		stmt, err := p.parseReassignStatement()
 		if err != nil {
 			return nil, err
 		}
@@ -104,6 +113,44 @@ func (p *Parser) parseAssignStatement() (ast.AssignStatement, error) {
 	return stmt, nil
 }
 
+func (p *Parser) parseReassignStatement() (ast.ReassignStatement, error) {
+	stmt := ast.ReassignStatement{Token: p.curToken}
+
+	if !p.expectPeek(token.Delimiter) {
+		return ast.ReassignStatement{}, fmt.Errorf("expected token 'DELIMITER' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+
+	if !p.expectPeek(token.Ident) {
+		return ast.ReassignStatement{}, fmt.Errorf("expected token 'IDENT' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+
+	stmt.Name = p.parseAtomExpression()
+
+	if !p.expectPeek(token.Delimiter) {
+		return ast.ReassignStatement{}, fmt.Errorf("expected token 'DELIMITER' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
+	}
+	p.nextToken()
+	p.nextToken()
+
+	exp, err := p.parseExpression()
+	if err != nil {
+		return ast.ReassignStatement{}, err
+	}
+	stmt.Value = exp
+
+	if !p.expectCur(token.RParen) {
+		return ast.ReassignStatement{}, fmt.Errorf("expected token ')' on line %d col %d, but got '%s'",
+			p.curToken.Line, p.curToken.Col, p.peekToken.Type)
+	}
+
+	return stmt, nil
+}
+
 // expressions are either lists, or atoms
 func (p *Parser) parseExpression() (ast.Expression, error) {
 	switch p.curToken.Type {
@@ -125,7 +172,7 @@ func (p *Parser) parseExpression() (ast.Expression, error) {
 
 func (p *Parser) parseListExpression() (ast.Expression, error) {
 	switch p.curToken.Type {
-	case "+":
+	case "+", "-", "*", "/", "%":
 		exp, err := p.parseBinaryExpression()
 		if err != nil {
 			return nil, err
@@ -140,7 +187,7 @@ func (p *Parser) parseListExpression() (ast.Expression, error) {
 func (p *Parser) parseBinaryExpression() (ast.BinaryExpression, error) {
 	var binaryExp ast.BinaryExpression
 	switch p.curToken.Type {
-	case "+":
+	case "+", "-", "*", "/", "%":
 		binaryExp.Token = p.curToken
 	default:
 		return ast.BinaryExpression{}, fmt.Errorf("Expected tokens '+' on line %d col %d, but got '%s'",

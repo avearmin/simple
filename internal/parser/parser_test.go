@@ -15,7 +15,11 @@ func TestParseProgram(t *testing.T) {
 		want  *ast.Program
 	}{
 		"simple program": {
-			input: `(:= foo (+ 1 2))`,
+			input: `(:= foo (+ 1 2))
+(= foo (- foo 1))
+(= foo (* foo 2))
+(= foo (/ foo 2))
+(= foo (% foo 2))`,
 			want: &ast.Program{
 				Statements: []ast.Statement{
 					ast.AssignStatement{
@@ -32,6 +36,78 @@ func TestParseProgram(t *testing.T) {
 							},
 							Second: ast.Atom{
 								Token: token.Token{Type: token.Int, Literal: "2", Line: 1, Col: 13},
+								Value: "2",
+							},
+						},
+					},
+					ast.ReassignStatement{
+						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 2, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "foo", Line: 2, Col: 3},
+							Value: "foo",
+						},
+						Value: ast.BinaryExpression{
+							Token: token.Token{Type: token.Subtract, Literal: "-", Line: 2, Col: 8},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 2, Col: 10},
+								Value: "foo",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "1", Line: 2, Col: 14},
+								Value: "1",
+							},
+						},
+					},
+					ast.ReassignStatement{
+						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 3, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "foo", Line: 3, Col: 3},
+							Value: "foo",
+						},
+						Value: ast.BinaryExpression{
+							Token: token.Token{Type: token.Multiply, Literal: "*", Line: 3, Col: 8},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 3, Col: 10},
+								Value: "foo",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 3, Col: 14},
+								Value: "2",
+							},
+						},
+					},
+					ast.ReassignStatement{
+						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 4, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "foo", Line: 4, Col: 3},
+							Value: "foo",
+						},
+						Value: ast.BinaryExpression{
+							Token: token.Token{Type: token.Divide, Literal: "/", Line: 4, Col: 8},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 4, Col: 10},
+								Value: "foo",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 4, Col: 14},
+								Value: "2",
+							},
+						},
+					},
+					ast.ReassignStatement{
+						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 5, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "foo", Line: 5, Col: 3},
+							Value: "foo",
+						},
+						Value: ast.BinaryExpression{
+							Token: token.Token{Type: token.Modulo, Literal: "%", Line: 5, Col: 8},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 5, Col: 10},
+								Value: "foo",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 5, Col: 14},
 								Value: "2",
 							},
 						},
@@ -79,6 +155,12 @@ func isEqualStatements(first, second ast.Statement) bool {
 			return false
 		}
 		return isEqualAssignStatement(stmtOne, stmtTwo)
+	case ast.ReassignStatement:
+		stmtTwo, ok := second.(ast.ReassignStatement)
+		if !ok {
+			return false
+		}
+		return isEqualReassignStatement(stmtOne, stmtTwo)
 	}
 	return false
 }
@@ -103,6 +185,19 @@ func isEqualExpressions(first, second ast.Expression) bool {
 }
 
 func isEqualAssignStatement(first, second ast.AssignStatement) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+	if !isEqualAtoms(first.Name, second.Name) {
+		return false
+	}
+	if !isEqualExpressions(first.Value, second.Value) {
+		return false
+	}
+	return true
+}
+
+func isEqualReassignStatement(first, second ast.ReassignStatement) bool {
 	if !isEqualTokens(first.Token, second.Token) {
 		return false
 	}
