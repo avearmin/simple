@@ -64,6 +64,28 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.NewFromByte(token.Multiply, l.char, line, col)
 	case '%':
 		tok = token.NewFromByte(token.Modulo, l.char, line, col)
+	case '|':
+		if l.input[l.nextPos] == '|' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			orOp := l.input[pos:l.pos]
+			tok = token.NewFromString(token.Or, orOp, line, col)
+			return tok
+		}
+	case '&':
+		if l.input[l.nextPos] == '&' {
+			pos := l.pos
+
+			l.readChar()
+			l.readChar()
+
+			andOp := l.input[pos:l.pos]
+			tok = token.NewFromString(token.And, andOp, line, col)
+			return tok
+		}
 	case '!':
 		if l.input[l.nextPos] == '=' {
 			pos := l.pos
