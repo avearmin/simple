@@ -216,7 +216,7 @@ func isWhitespace(char byte) bool {
 }
 
 func isLetter(char byte) bool {
-	return 'a' <= char && char <= 'z'
+	return ('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')
 }
 
 func isDigit(char byte) bool {
