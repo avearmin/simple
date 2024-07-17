@@ -288,6 +288,16 @@ func TestParse(t *testing.T) {
 				{token.EOF, "", 4, 13},
 			},
 		},
+		"control flow keywords": {
+			input: "if elif else",
+			want: []token.Token{
+				token.Token{token.If, "if", 1, 0},
+				token.Token{token.Delimiter, " ", 1, 2},
+				token.Token{token.Elif, "elif", 1, 3},
+				token.Token{token.Delimiter, " ", 1, 7},
+				token.Token{token.Else, "else", 1, 8},
+			},
+		},
 	}
 
 	for name, test := range tests {
