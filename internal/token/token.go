@@ -34,6 +34,10 @@ const (
 	LessThanOrEquals    = "<="
 	GreaterThanOrEquals = ">="
 
+	If   = "IF"
+	Elif = "ELIF"
+	Else = "ELSE"
+
 	Ident = "IDENT"
 )
 
