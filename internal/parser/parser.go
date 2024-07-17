@@ -172,7 +172,7 @@ func (p *Parser) parseExpression() (ast.Expression, error) {
 
 func (p *Parser) parseListExpression() (ast.Expression, error) {
 	switch p.curToken.Type {
-	case "+", "-", "*", "/", "%":
+	case "+", "-", "*", "/", "%", "==", "!=", "<=", ">=", "<", ">":
 		exp, err := p.parseBinaryExpression()
 		if err != nil {
 			return nil, err
@@ -187,11 +187,11 @@ func (p *Parser) parseListExpression() (ast.Expression, error) {
 func (p *Parser) parseBinaryExpression() (ast.BinaryExpression, error) {
 	var binaryExp ast.BinaryExpression
 	switch p.curToken.Type {
-	case "+", "-", "*", "/", "%":
+	case "+", "-", "*", "/", "%", "==", "!=", "<=", ">=", "<", ">":
 		binaryExp.Token = p.curToken
 	default:
-		return ast.BinaryExpression{}, fmt.Errorf("Expected tokens '+' on line %d col %d, but got '%s'",
-			p.curToken.Line, p.curToken.Col, p.curToken.Type)
+		return ast.BinaryExpression{}, fmt.Errorf("Cannot begin binary expression with '%s' on line %d col %d",
+			p.curToken.Type, p.curToken.Line, p.curToken.Col)
 	}
 
 	if !p.expectPeek(token.Delimiter) {
