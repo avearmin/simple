@@ -289,13 +289,15 @@ func TestParse(t *testing.T) {
 			},
 		},
 		"control flow keywords": {
-			input: "if elif else",
+			input: "(if elif else)",
 			want: []token.Token{
-				token.Token{token.If, "if", 1, 0},
-				token.Token{token.Delimiter, " ", 1, 2},
-				token.Token{token.Elif, "elif", 1, 3},
-				token.Token{token.Delimiter, " ", 1, 7},
-				token.Token{token.Else, "else", 1, 8},
+				token.Token{token.LParen, "(", 1, 0},
+				token.Token{token.If, "if", 1, 1},
+				token.Token{token.Delimiter, " ", 1, 3},
+				token.Token{token.Elif, "elif", 1, 4},
+				token.Token{token.Delimiter, " ", 1, 8},
+				token.Token{token.Else, "else", 1, 9},
+				token.Token{token.RParen, ")", 1, 13},
 			},
 		},
 	}

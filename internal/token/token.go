@@ -41,6 +41,12 @@ const (
 	Ident = "IDENT"
 )
 
+var identToType = map[string]Type{
+	"if":   If,
+	"elif": Elif,
+	"else": Else,
+}
+
 type Token struct {
 	Type    Type
 	Literal string
@@ -54,4 +60,12 @@ func NewFromByte(tokType Type, char byte, line, col int) Token {
 
 func NewFromString(tokType Type, str string, line, col int) Token {
 	return Token{Type: tokType, Literal: str, Line: line, Col: col}
+}
+
+func LookupIdent(ident string) (Type, bool) {
+	if tokenType, ok := identToType[ident]; ok {
+		return tokenType, true
+	} else {
+		return "", false
+	}
 }
