@@ -20,12 +20,17 @@ func TestParseProgram(t *testing.T) {
 (= foo (* foo 2))
 (= foo (/ foo 2))
 (= foo (% foo 2))
+
 (:= isBar (== foo 2))
 (= isBar (!= foo 2))
 (= isBar (<= foo 2))
 (= isBar (>= foo 2))
 (= isBar (> foo 2))
-(= isBar (< foo 2))`,
+(= isBar (< foo 2))
+
+(if isBar (= foo (+ foo 1))
+elif (== foo 1) (= isBar false)
+else (= isBar true))`,
 			want: &ast.Program{
 				Statements: []ast.Statement{
 					ast.AssignStatement{
@@ -223,6 +228,78 @@ func TestParseProgram(t *testing.T) {
 							Second: ast.Atom{
 								Token: token.Token{Type: token.Int, Literal: "2", Line: 11, Col: 16},
 								Value: "2",
+							},
+						},
+					},
+					ast.ConditionalStatement{
+						Token: token.Token{Type: token.If, Literal: "if", Line: 14, Col: 1},
+						IfCondition: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 14, Col: 4},
+							Value: "isBar",
+						},
+						IfStatements: []ast.Statement{
+							ast.ReassignStatement{
+								Token: token.Token{Type: token.Reassign, Literal: "=", Line: 14, Col: 11},
+								Name: ast.Atom{
+									Token: token.Token{Type: token.Ident, Literal: "foo", Line: 14, Col: 13},
+									Value: "foo",
+								},
+								Value: ast.BinaryExpression{
+									Token: token.Token{Type: token.Add, Literal: "+", Line: 14, Col: 18},
+									First: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "foo", Line: 14, Col: 20},
+										Value: "foo",
+									},
+									Second: ast.Atom{
+										Token: token.Token{Type: token.Int, Literal: "1", Line: 14, Col: 24},
+										Value: "1",
+									},
+								},
+							},
+						},
+						ElifBlocks: []ast.ElifBlock{
+							{
+								Token: token.Token{Type: token.Elif, Literal: "elif", Line: 15, Col: 1},
+								Condition: ast.BinaryExpression{
+									Token: token.Token{Type: token.Equals, Literal: "==", Line: 15, Col: 7},
+									First: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "foo", Line: 15, Col: 10},
+										Value: "foo",
+									},
+									Second: ast.Atom{
+										Token: token.Token{Type: token.Int, Literal: "1", Line: 15, Col: 14},
+										Value: "1",
+									},
+								},
+								Statements: []ast.Statement{
+									ast.ReassignStatement{
+										Token: token.Token{Type: token.Reassign, Literal: "=", Line: 15, Col: 18},
+										Name: ast.Atom{
+											Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 15, Col: 20},
+											Value: "isBar",
+										},
+										Value: ast.Atom{
+											Token: token.Token{Type: token.Bool, Literal: "false", Line: 15, Col: 28},
+											Value: "false",
+										},
+									},
+								},
+							},
+						},
+						ElseBlock: ast.ElseBlock{
+							Token: token.Token{Type: token.Else, Literal: "else", Line: 16, Col: 1},
+							Statements: []ast.Statement{
+								ast.ReassignStatement{
+									Token: token.Token{Type: token.Reassign, Literal: "=", Line: 16, Col: 6},
+									Name: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 16, Col: 8},
+										Value: "isBar",
+									},
+									Value: ast.Atom{
+										Token: token.Token{Type: token.Bool, Literal: "true", Line: 16, Col: 16},
+										Value: "true",
+									},
+								},
 							},
 						},
 					},
