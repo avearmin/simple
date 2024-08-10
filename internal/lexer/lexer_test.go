@@ -61,7 +61,7 @@ func TestParse(t *testing.T) {
 	}{
 		"Assign/Reassign Int Ident with arithmatic/comparison operators": {
 			input: `(:= foo 1)
-(= foo (+ foo 1))
+(:= foo (+ foo 1))
 (= foo (- foo 1))
 (= foo (* foo 2))
 (= foo (/ foo 2))
@@ -291,13 +291,14 @@ func TestParse(t *testing.T) {
 		"control flow keywords": {
 			input: "(if elif else)",
 			want: []token.Token{
-				token.Token{token.LParen, "(", 1, 0},
-				token.Token{token.If, "if", 1, 1},
-				token.Token{token.Delimiter, " ", 1, 3},
-				token.Token{token.Elif, "elif", 1, 4},
-				token.Token{token.Delimiter, " ", 1, 8},
-				token.Token{token.Else, "else", 1, 9},
-				token.Token{token.RParen, ")", 1, 13},
+				{token.LParen, "(", 1, 0},
+				{token.If, "if", 1, 1},
+				{token.Delimiter, " ", 1, 3},
+				{token.Elif, "elif", 1, 4},
+				{token.Delimiter, " ", 1, 8},
+				{token.Else, "else", 1, 9},
+				{token.RParen, ")", 1, 13},
+				{token.EOF, "", 1, 13},
 			},
 		},
 	}

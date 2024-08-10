@@ -35,8 +35,8 @@ type AssignStatement struct {
 	Value Expression
 }
 
-func (as AssignStatement) statementNode()       {}
-func (as AssignStatement) TokenLiteral() string { return as.Token.Literal }
+func (as AssignStatement) statementNode()        {}
+func (as AssignStatement) TokenLiteral() string  { return as.Token.Literal }
 func (as AssignStatement) TokenType() token.Type { return as.Token.Type }
 
 type ReassignStatement struct {
@@ -45,10 +45,9 @@ type ReassignStatement struct {
 	Value Expression
 }
 
-func (rs ReassignStatement) statementNode()       {}
-func (rs ReassignStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs ReassignStatement) statementNode()        {}
+func (rs ReassignStatement) TokenLiteral() string  { return rs.Token.Literal }
 func (rs ReassignStatement) TokenType() token.Type { return rs.Token.Type }
-
 
 type ElifBlock struct {
 	Token      token.Token
@@ -69,20 +68,18 @@ type ConditionalStatement struct {
 	ElseBlock    ElseBlock
 }
 
-func (cs ConditionalStatement) statementNode()       {}
-func (cs ConditionalStatement) TokenLiteral() string { return cs.Token.Literal }
+func (cs ConditionalStatement) statementNode()        {}
+func (cs ConditionalStatement) TokenLiteral() string  { return cs.Token.Literal }
 func (cs ConditionalStatement) TokenType() token.Type { return cs.Token.Type }
-
 
 type Atom struct {
 	Token token.Token
 	Value string
 }
 
-func (a Atom) expressionNode()      {}
-func (a Atom) TokenLiteral() string { return a.Token.Literal }
+func (a Atom) expressionNode()       {}
+func (a Atom) TokenLiteral() string  { return a.Token.Literal }
 func (a Atom) TokenType() token.Type { return a.Token.Type }
-
 
 type BinaryExpression struct {
 	Token  token.Token
@@ -90,7 +87,6 @@ type BinaryExpression struct {
 	Second Expression
 }
 
-func (be BinaryExpression) expressionNode()      {}
-func (be BinaryExpression) TokenLiteral() string { return be.Token.Literal }
+func (be BinaryExpression) expressionNode()       {}
+func (be BinaryExpression) TokenLiteral() string  { return be.Token.Literal }
 func (be BinaryExpression) TokenType() token.Type { return be.Token.Type }
-

@@ -69,3 +69,15 @@ func LookupIdent(ident string) (Type, bool) {
 		return "", false
 	}
 }
+
+func IsBoolToken(tokenType Type) bool {
+	return tokenType == Equals ||
+		tokenType == NotEquals ||
+		tokenType == LessThan ||
+		tokenType == GreaterThan ||
+		tokenType == LessThanOrEquals ||
+		tokenType == GreaterThanOrEquals ||
+		tokenType == Not ||
+		tokenType == And ||
+		tokenType == Or
+}
