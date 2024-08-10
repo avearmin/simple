@@ -352,6 +352,12 @@ func isEqualStatements(first, second ast.Statement) bool {
 			return false
 		}
 		return isEqualReassignStatement(stmtOne, stmtTwo)
+	case ast.ConditionalStatement:
+		stmtTwo, ok := second.(ast.ConditionalStatement)
+		if !ok {
+			return false
+		}
+		return isEqualConditionalStatement(stmtOne, stmtTwo)
 	}
 	return false
 }
@@ -401,6 +407,32 @@ func isEqualReassignStatement(first, second ast.ReassignStatement) bool {
 	return true
 }
 
+func isEqualConditionalStatement(first, second ast.ConditionalStatement) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+	if !isEqualExpressions(first.IfCondition, second.IfCondition) {
+		return false
+	}
+	if len(first.IfStatements) != len(second.IfStatements) {
+		return false
+	}
+	for i := range first.IfStatements {
+		if !isEqualStatements(first.IfStatements[i], second.IfStatements[i]) {
+			return false
+		}
+	}
+	if len(first.ElifBlocks) != len(second.ElifBlocks) {
+		return false
+	}
+	for i := range first.ElifBlocks {
+		if !isEqualElifBlocks(first.ElifBlocks[i], second.ElifBlocks[i]) {
+			return false
+		}
+	}
+	return isEqualElseBlocks(first.ElseBlock, second.ElseBlock)
+}
+
 func isEqualAtoms(first, second ast.Atom) bool {
 	return isEqualTokens(first.Token, second.Token) && first.Value == second.Value
 }
@@ -415,6 +447,39 @@ func isEqualTokens(first, second token.Token) bool {
 	}
 	if first.Literal != second.Literal {
 		return false
+	}
+	return true
+}
+
+func isEqualElifBlocks(first, second ast.ElifBlock) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+	if !isEqualExpressions(first.Condition, second.Condition) {
+		return false
+	}
+	if len(first.Statements) != len(second.Statements) {
+		return false
+	}
+	for i := range first.Statements {
+		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func isEqualElseBlocks(first, second ast.ElseBlock) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+	if len(first.Statements) != len(second.Statements) {
+		return false
+	}
+	for i := range first.Statements {
+		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
+			return false
+		}
 	}
 	return true
 }
