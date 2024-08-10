@@ -61,7 +61,7 @@ func TestParse(t *testing.T) {
 	}{
 		"Assign/Reassign Int Ident with arithmatic/comparison operators": {
 			input: `(:= foo 1)
-(:= foo (+ foo 1))
+(= foo (+ foo 1))
 (= foo (- foo 1))
 (= foo (* foo 2))
 (= foo (/ foo 2))
