@@ -72,6 +72,17 @@ func (cs ConditionalStatement) statementNode()        {}
 func (cs ConditionalStatement) TokenLiteral() string  { return cs.Token.Literal }
 func (cs ConditionalStatement) TokenType() token.Type { return cs.Token.Type }
 
+type FunctionAssignStatement struct {
+	Token      token.Token
+	Name       Atom
+	Params     []Atom
+	Statements []Statement
+}
+
+func (fas FunctionAssignStatement) statementNode()        {}
+func (fas FunctionAssignStatement) TokenLiteral() string  { return fas.Token.Literal }
+func (fas FunctionAssignStatement) TokenType() token.Type { return fas.Token.Type }
+
 type Atom struct {
 	Token token.Token
 	Value string
