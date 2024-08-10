@@ -448,6 +448,12 @@ func isEqualTokens(first, second token.Token) bool {
 	if first.Literal != second.Literal {
 		return false
 	}
+	if first.Line != second.Line {
+		return false
+	}
+	if first.Col != second.Col {
+		return false
+	}
 	return true
 }
 
