@@ -302,7 +302,7 @@ func TestParse(t *testing.T) {
 			},
 		},
 		"multiline if-elif-else": {
-			input: `(if a 
+			input: `(if a
     (= x true)
 elif b
     (= x false)
@@ -316,6 +316,36 @@ else
 				{Type: token.Ident, Literal: "a", Line: 1, Col: 4},
 				{Type: token.Delimiter, Literal: "", Line: 1, Col: 5},
 				{Type: token.LParen, Literal: "(", Line: 2, Col: 4},
+				{Type: token.Reassign, Literal: "=", Line: 2, Col: 5},
+				{Type: token.Delimiter, Literal: "", Line: 2, Col: 6},
+				{Type: token.Ident, Literal: "x", Line: 2, Col: 7},
+				{Type: token.Delimiter, Literal: "", Line: 2, Col: 8},
+				{Type: token.Bool, Literal: "true", Line: 2, Col: 9},
+				{Type: token.RParen, Literal: ")", Line: 2, Col: 13},
+				{Type: token.Delimiter, Literal: "", Line: 2, Col: 14},
+				{Type: token.Elif, Literal: "elif", Line: 3, Col: 0},
+				{Type: token.Delimiter, Literal: "", Line: 3, Col: 4},
+				{Type: token.Ident, Literal: "b", Line: 3, Col: 5},
+				{Type: token.Delimiter, Literal: "", Line: 3, Col: 6},
+				{Type: token.LParen, Literal: "(", Line: 4, Col: 4},
+				{Type: token.Reassign, Literal: "=", Line: 4, Col: 5},
+				{Type: token.Delimiter, Literal: "", Line: 4, Col: 6},
+				{Type: token.Ident, Literal: "x", Line: 4, Col: 7},
+				{Type: token.Delimiter, Literal: "", Line: 4, Col: 8},
+				{Type: token.Bool, Literal: "false", Line: 4, Col: 9},
+				{Type: token.RParen, Literal: ")", Line: 4, Col: 14},
+				{Type: token.Delimiter, Literal: "", Line: 4, Col: 15},
+				{Type: token.Else, Literal: "else", Line: 5, Col: 0},
+				{Type: token.Delimiter, Literal: "", Line: 5, Col: 4},
+				{Type: token.LParen, Literal: "(", Line: 6, Col: 4},
+				{Type: token.Reassign, Literal: "=", Line: 6, Col: 5},
+				{Type: token.Delimiter, Literal: "", Line: 6, Col: 6},
+				{Type: token.Ident, Literal: "y", Line: 6, Col: 7},
+				{Type: token.Delimiter, Literal: "", Line: 6, Col: 8},
+				{Type: token.Bool, Literal: "true", Line: 6, Col: 9},
+				{Type: token.RParen, Literal: ")", Line: 6, Col: 13},
+				{Type: token.Delimiter, Literal: "", Line: 6, Col: 14},
+				{Type: token.RParen, Literal: ")", Line: 7, Col: 0},
 			},
 		},
 	}
