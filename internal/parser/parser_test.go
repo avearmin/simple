@@ -124,37 +124,19 @@ else (= isBar true))`,
 						},
 					},
 					ast.AssignStatement{
-						Token: token.Token{Type: token.Assign, Literal: ":=", Line: 6, Col: 1},
+						Token: token.Token{Type: token.Assign, Literal: ":=", Line: 7, Col: 1},
 						Name: ast.Atom{
-							Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 6, Col: 4},
+							Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 7, Col: 4},
 							Value: "isBar",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.Equals, Literal: "==", Line: 6, Col: 11},
+							Token: token.Token{Type: token.Equals, Literal: "==", Line: 7, Col: 11},
 							First: ast.Atom{
-								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 6, Col: 14},
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 7, Col: 14},
 								Value: "foo",
 							},
 							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2", Line: 6, Col: 18},
-								Value: "2",
-							},
-						},
-					},
-					ast.ReassignStatement{
-						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 7, Col: 1},
-						Name: ast.Atom{
-							Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 7, Col: 3},
-							Value: "isBar",
-						},
-						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.NotEquals, Literal: "!=", Line: 7, Col: 9},
-							First: ast.Atom{
-								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 7, Col: 12},
-								Value: "foo",
-							},
-							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2", Line: 7, Col: 16},
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 7, Col: 18},
 								Value: "2",
 							},
 						},
@@ -166,13 +148,13 @@ else (= isBar true))`,
 							Value: "isBar",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.LessThanOrEquals, Literal: "<=", Line: 8, Col: 9},
+							Token: token.Token{Type: token.NotEquals, Literal: "!=", Line: 8, Col: 10},
 							First: ast.Atom{
-								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 8, Col: 12},
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 8, Col: 13},
 								Value: "foo",
 							},
 							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2", Line: 8, Col: 16},
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 8, Col: 17},
 								Value: "2",
 							},
 						},
@@ -184,13 +166,13 @@ else (= isBar true))`,
 							Value: "isBar",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.GreaterThanOrEquals, Literal: ">=", Line: 9, Col: 9},
+							Token: token.Token{Type: token.LessThanOrEquals, Literal: "<=", Line: 9, Col: 10},
 							First: ast.Atom{
-								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 9, Col: 12},
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 9, Col: 13},
 								Value: "foo",
 							},
 							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2", Line: 9, Col: 16},
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 9, Col: 17},
 								Value: "2",
 							},
 						},
@@ -202,13 +184,13 @@ else (= isBar true))`,
 							Value: "isBar",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.GreaterThan, Literal: ">", Line: 10, Col: 9},
+							Token: token.Token{Type: token.GreaterThanOrEquals, Literal: ">=", Line: 10, Col: 10},
 							First: ast.Atom{
-								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 10, Col: 12},
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 10, Col: 13},
 								Value: "foo",
 							},
 							Second: ast.Atom{
-								Token: token.Token{Type: token.Int, Literal: "2", Line: 10, Col: 16},
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 10, Col: 17},
 								Value: "2",
 							},
 						},
@@ -220,13 +202,31 @@ else (= isBar true))`,
 							Value: "isBar",
 						},
 						Value: ast.BinaryExpression{
-							Token: token.Token{Type: token.LessThan, Literal: "<", Line: 11, Col: 9},
+							Token: token.Token{Type: token.GreaterThan, Literal: ">", Line: 11, Col: 10},
 							First: ast.Atom{
 								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 11, Col: 12},
 								Value: "foo",
 							},
 							Second: ast.Atom{
 								Token: token.Token{Type: token.Int, Literal: "2", Line: 11, Col: 16},
+								Value: "2",
+							},
+						},
+					},
+					ast.ReassignStatement{
+						Token: token.Token{Type: token.Reassign, Literal: "=", Line: 12, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 12, Col: 3},
+							Value: "isBar",
+						},
+						Value: ast.BinaryExpression{
+							Token: token.Token{Type: token.LessThan, Literal: "<", Line: 12, Col: 10},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "foo", Line: 12, Col: 12},
+								Value: "foo",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "2", Line: 12, Col: 16},
 								Value: "2",
 							},
 						},
@@ -259,27 +259,27 @@ else (= isBar true))`,
 						},
 						ElifBlocks: []ast.ElifBlock{
 							{
-								Token: token.Token{Type: token.Elif, Literal: "elif", Line: 15, Col: 1},
+								Token: token.Token{Type: token.Elif, Literal: "elif", Line: 15, Col: 0},
 								Condition: ast.BinaryExpression{
-									Token: token.Token{Type: token.Equals, Literal: "==", Line: 15, Col: 7},
+									Token: token.Token{Type: token.Equals, Literal: "==", Line: 15, Col: 6},
 									First: ast.Atom{
-										Token: token.Token{Type: token.Ident, Literal: "foo", Line: 15, Col: 10},
+										Token: token.Token{Type: token.Ident, Literal: "foo", Line: 15, Col: 9},
 										Value: "foo",
 									},
 									Second: ast.Atom{
-										Token: token.Token{Type: token.Int, Literal: "1", Line: 15, Col: 14},
+										Token: token.Token{Type: token.Int, Literal: "1", Line: 15, Col: 13},
 										Value: "1",
 									},
 								},
 								Statements: []ast.Statement{
 									ast.ReassignStatement{
-										Token: token.Token{Type: token.Reassign, Literal: "=", Line: 15, Col: 18},
+										Token: token.Token{Type: token.Reassign, Literal: "=", Line: 15, Col: 17},
 										Name: ast.Atom{
-											Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 15, Col: 20},
+											Token: token.Token{Type: token.Ident, Literal: "isBar", Line: 15, Col: 19},
 											Value: "isBar",
 										},
 										Value: ast.Atom{
-											Token: token.Token{Type: token.Bool, Literal: "false", Line: 15, Col: 28},
+											Token: token.Token{Type: token.Bool, Literal: "false", Line: 15, Col: 25},
 											Value: "false",
 										},
 									},
@@ -287,7 +287,7 @@ else (= isBar true))`,
 							},
 						},
 						ElseBlock: ast.ElseBlock{
-							Token: token.Token{Type: token.Else, Literal: "else", Line: 16, Col: 1},
+							Token: token.Token{Type: token.Else, Literal: "else", Line: 16, Col: 0},
 							Statements: []ast.Statement{
 								ast.ReassignStatement{
 									Token: token.Token{Type: token.Reassign, Literal: "=", Line: 16, Col: 6},
@@ -296,7 +296,7 @@ else (= isBar true))`,
 										Value: "isBar",
 									},
 									Value: ast.Atom{
-										Token: token.Token{Type: token.Bool, Literal: "true", Line: 16, Col: 16},
+										Token: token.Token{Type: token.Bool, Literal: "true", Line: 16, Col: 14},
 										Value: "true",
 									},
 								},
