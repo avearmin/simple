@@ -37,7 +37,7 @@ const (
 	If   = "IF"
 	Elif = "ELIF"
 	Else = "ELSE"
-	
+
 	Fn = "FN"
 
 	Ident = "IDENT"
@@ -47,7 +47,7 @@ var identToType = map[string]Type{
 	"if":   If,
 	"elif": Elif,
 	"else": Else,
-	"fn": Fn,
+	"fn":   Fn,
 }
 
 type Token struct {

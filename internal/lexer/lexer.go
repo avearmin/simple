@@ -150,8 +150,8 @@ func (l *Lexer) NextToken() token.Token {
 			return tok
 		}
 	case ' ', '\t', '\n', '\r':
-		delimiter := l.readWhitespaces()
-		tok = token.NewFromString(token.Delimiter, delimiter, line, col)
+		l.readWhitespaces()
+		tok = token.NewFromString(token.Delimiter, "", line, col)
 		return tok
 	case 0:
 		tok = token.NewFromString(token.EOF, "", line, col)
