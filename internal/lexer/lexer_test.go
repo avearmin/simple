@@ -348,6 +348,32 @@ else
 				{Type: token.RParen, Literal: ")", Line: 7, Col: 0},
 			},
 		},
+		"function def": {
+			input: "(fn add foo bar (return (+ foo bar)))",
+			want: []token.Token{
+				{Type: token.LParen, Literal: "(", Line: 1, Col: 0},
+				{Type: token.Fn, Literal: "fn", Line: 1, Col: 1},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 3},
+				{Type: token.Ident, Literal: "add", Line: 1, Col: 4},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 7},
+				{Type: token.Ident, Literal: "foo", Line: 1, Col: 8},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 11},
+				{Type: token.Ident, Literal: "bar", Line: 1, Col: 12},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 15},
+				{Type: token.LParen, Literal: "(", Line: 1, Col: 16},
+				{Type: token.Return, Literal: "return", Line: 1, Col: 17},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 23},
+				{Type: token.LParen, Literal: "(", Line: 1, Col: 24},
+				{Type: token.Add, Literal: "+", Line: 1, Col: 25},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 26},
+				{Type: token.Ident, Literal: "foo", Line: 1, Col: 27},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 30},
+				{Type: token.Ident, Literal: "bar", Line: 1, Col: 31},
+				{Type: token.RParen, Literal: ")", Line: 1, Col: 34},
+				{Type: token.RParen, Literal: ")", Line: 1, Col: 35},
+				{Type: token.RParen, Literal: ")", Line: 1, Col: 36},
+			},
+		},
 	}
 
 	for name, test := range tests {
