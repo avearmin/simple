@@ -83,6 +83,15 @@ func (fas FunctionAssignStatement) statementNode()        {}
 func (fas FunctionAssignStatement) TokenLiteral() string  { return fas.Token.Literal }
 func (fas FunctionAssignStatement) TokenType() token.Type { return fas.Token.Type }
 
+type ReturnStatement struct {
+	Token token.Token
+	Value Expression
+}
+
+func (rs ReturnStatement) statementNode()        {}
+func (rs ReturnStatement) TokenLiteral() string  { return rs.Token.Literal }
+func (rs ReturnStatement) TokenType() token.Type { return rs.Token.Type }
+
 type Atom struct {
 	Token token.Token
 	Value string

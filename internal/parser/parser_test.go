@@ -30,7 +30,11 @@ func TestParseProgram(t *testing.T) {
 
 (if isBar (= foo (+ foo 1))
 elif (== foo 1) (= isBar false)
-else (= isBar true))`,
+else (= isBar true))
+
+(fn addThenDouble x y
+    (:= z (+ x y))
+    (return (* 2 z)))`,
 			want: &ast.Program{
 				Statements: []ast.Statement{
 					ast.AssignStatement{
@@ -298,6 +302,57 @@ else (= isBar true))`,
 									Value: ast.Atom{
 										Token: token.Token{Type: token.Bool, Literal: "true", Line: 16, Col: 14},
 										Value: "true",
+									},
+								},
+							},
+						},
+					},
+					ast.FunctionAssignStatement{
+						Token: token.Token{Type: token.Fn, Literal: "fn", Line: 18, Col: 1},
+						Name: ast.Atom{
+							Token: token.Token{Type: token.Ident, Literal: "addThenDouble", Line: 18, Col: 4},
+							Value: "addThenDouble",
+						},
+						Params: []ast.Atom{
+							{
+								Token: token.Token{Type: token.Ident, Literal: "x", Line: 18, Col: 18},
+								Value: "x",
+							},
+							{
+								Token: token.Token{Type: token.Ident, Literal: "y", Line: 18, Col: 20},
+								Value: "y",
+							},
+						},
+						Statements: []ast.Statement{
+							ast.AssignStatement{
+								Token: token.Token{Type: token.Assign, Literal: ":=", Line: 19, Col: 6},
+								Name: ast.Atom{
+									Token: token.Token{Type: token.Ident, Literal: "z", Line: 19, Col: 9},
+									Value: "z",
+								},
+								Value: ast.BinaryExpression{
+									Token: token.Token{Type: token.Add, Literal: "+", Line: 19, Col: 12},
+									First: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "x", Line: 19, Col: 14},
+										Value: "x",
+									},
+									Second: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "y", Line: 19, Col: 16},
+										Value: "y",
+									},
+								},
+							},
+							ast.ReturnStatement{
+								Token: token.Token{Type: token.Return, Literal: "return", Line: 20, Col: 6},
+								Value: ast.BinaryExpression{
+									Token: token.Token{Type: token.Multiply, Literal: "*", Line: 20, Col: 14},
+									First: ast.Atom{
+										Token: token.Token{Type: token.Int, Literal: "2", Line: 20, Col: 16},
+										Value: "2",
+									},
+									Second: ast.Atom{
+										Token: token.Token{Type: token.Ident, Literal: "2", Line: 20, Col: 18},
+										Value: "z",
 									},
 								},
 							},
