@@ -41,6 +41,8 @@ const (
 	Fn     = "FN"
 	Return = "RETURN"
 
+	For = "FOR"
+
 	Ident = "IDENT"
 )
 

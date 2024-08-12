@@ -92,6 +92,18 @@ func (rs ReturnStatement) statementNode()        {}
 func (rs ReturnStatement) TokenLiteral() string  { return rs.Token.Literal }
 func (rs ReturnStatement) TokenType() token.Type { return rs.Token.Type }
 
+type ForLoopStatement struct {
+	Token      token.Token
+	Initalizer AssignStatement
+	Condition  BinaryExpression
+	Update     BinaryExpression
+	Statements []Statement
+}
+
+func (fls ForLoopStatement) statementNode()        {}
+func (fls ForLoopStatement) TokenLiteral() string  { return fls.Token.Literal }
+func (fls ForLoopStatement) TokenType() token.Type { return fls.Token.Type }
+
 type Atom struct {
 	Token token.Token
 	Value string
