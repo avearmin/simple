@@ -325,33 +325,33 @@ else (= isBar true))
 						},
 						Statements: []ast.Statement{
 							ast.AssignStatement{
-								Token: token.Token{Type: token.Assign, Literal: ":=", Line: 19, Col: 6},
+								Token: token.Token{Type: token.Assign, Literal: ":=", Line: 19, Col: 5},
 								Name: ast.Atom{
-									Token: token.Token{Type: token.Ident, Literal: "z", Line: 19, Col: 9},
+									Token: token.Token{Type: token.Ident, Literal: "z", Line: 19, Col: 8},
 									Value: "z",
 								},
 								Value: ast.BinaryExpression{
-									Token: token.Token{Type: token.Add, Literal: "+", Line: 19, Col: 12},
+									Token: token.Token{Type: token.Add, Literal: "+", Line: 19, Col: 11},
 									First: ast.Atom{
-										Token: token.Token{Type: token.Ident, Literal: "x", Line: 19, Col: 14},
+										Token: token.Token{Type: token.Ident, Literal: "x", Line: 19, Col: 13},
 										Value: "x",
 									},
 									Second: ast.Atom{
-										Token: token.Token{Type: token.Ident, Literal: "y", Line: 19, Col: 16},
+										Token: token.Token{Type: token.Ident, Literal: "y", Line: 19, Col: 15},
 										Value: "y",
 									},
 								},
 							},
 							ast.ReturnStatement{
-								Token: token.Token{Type: token.Return, Literal: "return", Line: 20, Col: 6},
+								Token: token.Token{Type: token.Return, Literal: "return", Line: 20, Col: 5},
 								Value: ast.BinaryExpression{
-									Token: token.Token{Type: token.Multiply, Literal: "*", Line: 20, Col: 14},
+									Token: token.Token{Type: token.Multiply, Literal: "*", Line: 20, Col: 13},
 									First: ast.Atom{
-										Token: token.Token{Type: token.Int, Literal: "2", Line: 20, Col: 16},
+										Token: token.Token{Type: token.Int, Literal: "2", Line: 20, Col: 15},
 										Value: "2",
 									},
 									Second: ast.Atom{
-										Token: token.Token{Type: token.Ident, Literal: "2", Line: 20, Col: 18},
+										Token: token.Token{Type: token.Ident, Literal: "2", Line: 20, Col: 17},
 										Value: "z",
 									},
 								},
@@ -413,6 +413,18 @@ func isEqualStatements(first, second ast.Statement) bool {
 			return false
 		}
 		return isEqualConditionalStatement(stmtOne, stmtTwo)
+	case ast.FunctionAssignStatement:
+		stmtTwo, ok := second.(ast.FunctionAssignStatement)
+		if !ok {
+			return false
+		}
+		return isEqualFunctionAssignStatements(stmtOne, stmtTwo)
+	case ast.ReturnStatement:
+		stmtTwo, ok := second.(ast.ReturnStatement)
+		if !ok {
+			return false
+		}
+		return isEqualReturnStatements(stmtOne, stmtTwo)
 	}
 	return false
 }
@@ -486,6 +498,40 @@ func isEqualConditionalStatement(first, second ast.ConditionalStatement) bool {
 		}
 	}
 	return isEqualElseBlocks(first.ElseBlock, second.ElseBlock)
+}
+
+func isEqualFunctionAssignStatements(first, second ast.FunctionAssignStatement) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+
+	if !isEqualAtoms(first.Name, second.Name) {
+		return false
+	}
+
+	if len(first.Statements) != len(second.Statements) {
+		return false
+	}
+
+	for i := range first.Statements {
+		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isEqualReturnStatements(first, second ast.ReturnStatement) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+
+	if !isEqualExpressions(first.Value, second.Value) {
+		return false
+	}
+
+	return true
 }
 
 func isEqualAtoms(first, second ast.Atom) bool {

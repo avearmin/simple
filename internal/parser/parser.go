@@ -72,6 +72,18 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 			return nil, err
 		}
 		return stmt, nil
+	case token.Fn:
+		stmt, err := p.parseFunctionAssignStatement()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	case token.Return:
+		stmt, err := p.parseReturnStatement()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
 	default:
 		return nil, fmt.Errorf("cannot begin statement with token '%s' on line %d col %d",
 			p.curToken.Type, p.curToken.Line, p.curToken.Col)
@@ -288,6 +300,98 @@ func (p *Parser) parseElseBlock() (ast.ElseBlock, error) {
 	}
 
 	return block, nil
+}
+
+func (p *Parser) parseFunctionAssignStatement() (ast.FunctionAssignStatement, error) {
+	if !p.expectCur(token.Fn) {
+		return ast.FunctionAssignStatement{}, fmt.Errorf("%d:%d expected 'FN', got '%s'", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	fnStmt := ast.FunctionAssignStatement{Token: p.curToken, Params: []ast.Atom{}, Statements: []ast.Statement{}}
+	p.nextToken()
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.FunctionAssignStatement{}, err
+	}
+
+	fnName, err := p.parseAtomExpression()
+	if err != nil {
+		return ast.FunctionAssignStatement{}, err
+	}
+	if fnName.TokenType() != token.Ident {
+		return ast.FunctionAssignStatement{}, fmt.Errorf("%d:%d cannot use '%s' as name of a function", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	fnStmt.Name = fnName
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.FunctionAssignStatement{}, err
+	}
+
+	for !p.expectCur(token.LParen) {
+		param, err := p.parseAtomExpression()
+		if err != nil {
+			return ast.FunctionAssignStatement{}, err
+		}
+		if param.TokenType() != token.Ident {
+			return ast.FunctionAssignStatement{}, fmt.Errorf("%d:%d cannot use '%s' as parameter to a function", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+
+		}
+
+		fnStmt.Params = append(fnStmt.Params, param)
+
+		if p.expectCur(token.RParen) {
+			return fnStmt, nil
+		}
+
+		if err := p.eatDelimiter(); err != nil {
+			return ast.FunctionAssignStatement{}, err
+		}
+
+	}
+
+	for {
+		innerStmt, err := p.parseStatement()
+		if err != nil {
+			return ast.FunctionAssignStatement{}, err
+		}
+		fnStmt.Statements = append(fnStmt.Statements, innerStmt)
+
+		if p.expectCur(token.RParen) {
+			break
+		}
+
+		if err := p.eatDelimiter(); err != nil {
+			return ast.FunctionAssignStatement{}, err
+		}
+	}
+
+	p.nextToken()
+	return fnStmt, nil
+}
+
+func (p *Parser) parseReturnStatement() (ast.ReturnStatement, error) {
+	if !p.expectCur(token.Return) {
+		return ast.ReturnStatement{}, fmt.Errorf("%d:%d expected 'RETURN' but got '%s'", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	returnStmt := ast.ReturnStatement{Token: p.curToken}
+	p.nextToken()
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.ReturnStatement{}, err
+	}
+
+	exp, err := p.parseExpression()
+	if err != nil {
+		return ast.ReturnStatement{}, err
+	}
+
+	returnStmt.Value = exp
+
+	if !p.expectCur(token.RParen) {
+		return ast.ReturnStatement{}, fmt.Errorf("%d:%d expected ')' but got %s", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	p.nextToken()
+
+	return returnStmt, nil
 }
 
 // expressions are either lists, or atoms
