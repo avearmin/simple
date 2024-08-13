@@ -34,7 +34,10 @@ else (= isBar true))
 
 (fn addThenDouble x y
     (:= z (+ x y))
-    (return (* 2 z)))`,
+    (return (* 2 z)))
+
+(for (:= i 0) (< i 5) (= i (+ i 1))
+    (addThenDouble i 2))`,
 			want: &ast.Program{
 				Statements: []ast.Statement{
 					ast.AssignStatement{
@@ -353,6 +356,64 @@ else (= isBar true))
 									Second: ast.Atom{
 										Token: token.Token{Type: token.Ident, Literal: "2", Line: 20, Col: 17},
 										Value: "z",
+									},
+								},
+							},
+						},
+					},
+					ast.ForLoopStatement{
+						Token: token.Token{Type: token.For, Literal: "for", Line: 22, Col: 1},
+						Initalizer: ast.AssignStatement{
+							Token: token.Token{Type: token.Assign, Literal: ":=", Line: 22, Col: 6},
+							Name: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 9},
+								Value: "i",
+							},
+							Value: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "0", Line: 22, Col: 11},
+								Value: "0",
+							},
+						},
+						Condition: ast.BinaryExpression{
+							Token: token.Token{Type: token.LessThan, Literal: "<", Line: 22, Col: 15},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 17},
+								Value: "i",
+							},
+							Second: ast.Atom{
+								Token: token.Token{Type: token.Int, Literal: "5", Line: 22, Col: 19},
+								Value: "5",
+							},
+						},
+						Update: ast.BinaryExpression{
+							Token: token.Token{Type: token.Reassign, Literal: "=", Line: 22, Col: 23},
+							First: ast.Atom{
+								Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 25},
+								Value: "i",
+							},
+							Second: ast.BinaryExpression{
+								Token: token.Token{Type: token.Add, Literal: "+", Line: 22, Col: 28},
+								First: ast.Atom{
+									Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 30},
+									Value: "i",
+								},
+								Second: ast.Atom{
+									Token: token.Token{Type: token.Int, Literal: "1", Line: 22, Col: 32},
+									Value: "1",
+								},
+							},
+						},
+						Statements: []ast.Statement{
+							ast.FnCall{
+								Token: token.Token{Type: token.Ident, Literal: "addThenDouble", Line: 23, Col: 5},
+								Arguments: []ast.Atom{
+									{
+										Token: token.Token{Type: token.Ident, Literal: "i", Line: 23, Col: 19},
+										Value: "i",
+									},
+									{
+										Token: token.Token{Type: token.Int, Literal: "2", Line: 23, Col: 21},
+										Value: "2",
 									},
 								},
 							},
