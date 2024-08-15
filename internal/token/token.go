@@ -52,6 +52,7 @@ var identToType = map[string]Type{
 	"else":   Else,
 	"fn":     Fn,
 	"return": Return,
+	"for":    For,
 }
 
 type Token struct {

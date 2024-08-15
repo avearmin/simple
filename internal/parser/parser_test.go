@@ -2,12 +2,35 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/avearmin/simple/internal/ast"
 	"github.com/avearmin/simple/internal/lexer"
 	"github.com/avearmin/simple/internal/token"
 )
+
+type batchError struct {
+	msgs []string
+}
+
+func newBatchError() *batchError {
+	return &batchError{msgs: []string{}}
+}
+
+func (be *batchError) add(s string) {
+	be.msgs = append(be.msgs, s)
+}
+
+func (be *batchError) Error() string {
+	var builder strings.Builder
+
+	for _, msg := range be.msgs {
+		builder.WriteString(msg)
+	}
+
+	return builder.String()
+}
 
 func TestParseProgram(t *testing.T) {
 	tests := map[string]struct {
@@ -385,13 +408,13 @@ else (= isBar true))
 								Value: "5",
 							},
 						},
-						Update: ast.BinaryExpression{
+						Update: ast.ReassignStatement{
 							Token: token.Token{Type: token.Reassign, Literal: "=", Line: 22, Col: 23},
-							First: ast.Atom{
+							Name: ast.Atom{
 								Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 25},
 								Value: "i",
 							},
-							Second: ast.BinaryExpression{
+							Value: ast.BinaryExpression{
 								Token: token.Token{Type: token.Add, Literal: "+", Line: 22, Col: 28},
 								First: ast.Atom{
 									Token: token.Token{Type: token.Ident, Literal: "i", Line: 22, Col: 30},
@@ -431,27 +454,35 @@ else (= isBar true))
 
 			program, err := p.ParseProgram()
 			if err != nil {
-				t.Fatalf("Parsing failed with error: %s", err)
+				t.Fatalf("Parsing failed with error: %s", err.Error())
 			}
-			if err := isEqualPrograms(program, test.want); err != nil {
-				t.Fatal(err)
+			if !isEqualPrograms(program, test.want) {
+				if len(program.Statements) != len(test.want.Statements) {
+					t.Fatalf("len(want)=%d, len(got)=%d", len(test.want.Statements), len(program.Statements))
+				}
+
+				bErr := newBatchError()
+				for i := range program.Statements {
+					bErr.add(fmt.Sprintf("got=%v\nwant=%v\n", program.Statements[i], test.want.Statements[i]))
+				}
+				t.Fatal(bErr)
 			}
 		})
 	}
 }
 
-func isEqualPrograms(first, second *ast.Program) error {
+func isEqualPrograms(first, second *ast.Program) bool {
 	if len(first.Statements) != len(second.Statements) {
-		return fmt.Errorf("expected statements len=%d, but got=%d", len(second.Statements), len(first.Statements))
+		return false
 	}
 
 	for i := range first.Statements {
 		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
-			return fmt.Errorf("expected statement=%v, but got=%v", second.Statements[i], first.Statements[i])
+			return false
 		}
 	}
 
-	return nil
+	return true
 }
 
 func isEqualStatements(first, second ast.Statement) bool {
@@ -486,6 +517,18 @@ func isEqualStatements(first, second ast.Statement) bool {
 			return false
 		}
 		return isEqualReturnStatements(stmtOne, stmtTwo)
+	case ast.FnCall:
+		stmtTwo, ok := second.(ast.FnCall)
+		if !ok {
+			return false
+		}
+		return isEqualFnCalls(stmtOne, stmtTwo)
+	case ast.ForLoopStatement:
+		stmtTwo, ok := second.(ast.ForLoopStatement)
+		if !ok {
+			return false
+		}
+		return isEqualForLoopStatements(stmtOne, stmtTwo)
 	}
 	return false
 }
@@ -590,6 +633,54 @@ func isEqualReturnStatements(first, second ast.ReturnStatement) bool {
 
 	if !isEqualExpressions(first.Value, second.Value) {
 		return false
+	}
+
+	return true
+}
+
+func isEqualFnCalls(first, second ast.FnCall) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+
+	if len(first.Arguments) != len(second.Arguments) {
+		return false
+	}
+
+	for i := range first.Arguments {
+		if !isEqualAtoms(first.Arguments[i], second.Arguments[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isEqualForLoopStatements(first, second ast.ForLoopStatement) bool {
+	if !isEqualTokens(first.Token, second.Token) {
+		return false
+	}
+
+	if !isEqualAssignStatement(first.Initalizer, second.Initalizer) {
+		return false
+	}
+
+	if !isEqualBinaryExpressions(first.Condition, second.Condition) {
+		return false
+	}
+
+	if !isEqualReassignStatement(first.Update, second.Update) {
+		return false
+	}
+
+	if len(first.Statements) != len(second.Statements) {
+		return false
+	}
+
+	for i := range first.Statements {
+		if !isEqualStatements(first.Statements[i], second.Statements[i]) {
+			return false
+		}
 	}
 
 	return true

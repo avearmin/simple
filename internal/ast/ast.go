@@ -96,7 +96,7 @@ type ForLoopStatement struct {
 	Token      token.Token
 	Initalizer AssignStatement
 	Condition  BinaryExpression
-	Update     BinaryExpression
+	Update     ReassignStatement
 	Statements []Statement
 }
 

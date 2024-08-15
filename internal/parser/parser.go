@@ -84,6 +84,18 @@ func (p *Parser) parseStatement() (ast.Statement, error) {
 			return nil, err
 		}
 		return stmt, nil
+	case token.For:
+		stmt, err := p.parseForLoopStatement()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	case token.Ident:
+		stmt, err := p.parseFnCall()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
 	default:
 		return nil, fmt.Errorf("cannot begin statement with token '%s' on line %d col %d",
 			p.curToken.Type, p.curToken.Line, p.curToken.Col)
@@ -392,6 +404,116 @@ func (p *Parser) parseReturnStatement() (ast.ReturnStatement, error) {
 	p.nextToken()
 
 	return returnStmt, nil
+}
+
+func (p *Parser) parseForLoopStatement() (ast.ForLoopStatement, error) {
+	if !p.expectCur(token.For) {
+		return ast.ForLoopStatement{}, fmt.Errorf("%d:%d expected 'FOR' but got %s", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	forLoopStmt := ast.ForLoopStatement{Token: p.curToken, Statements: []ast.Statement{}}
+	p.nextToken()
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+
+	if !p.expectCur(token.LParen) {
+		return ast.ForLoopStatement{}, fmt.Errorf("%d:%d expected '(' but got %s", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	p.nextToken()
+
+	initalizer, err := p.parseAssignStatement()
+	if err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+	forLoopStmt.Initalizer = initalizer
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+
+	if !p.expectCur(token.LParen) {
+		return ast.ForLoopStatement{}, fmt.Errorf("%d:%d expected '(' but got %s", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	p.nextToken()
+
+	condition, err := p.parseBinaryExpression()
+	if err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+	forLoopStmt.Condition = condition
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+
+	if !p.expectCur(token.LParen) {
+		return ast.ForLoopStatement{}, fmt.Errorf("%d:%d expected '(' but got %s", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	p.nextToken()
+
+	update, err := p.parseReassignStatement()
+	if err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+	forLoopStmt.Update = update
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.ForLoopStatement{}, err
+	}
+
+	for {
+		innerStmt, err := p.parseStatement()
+		if err != nil {
+			return ast.ForLoopStatement{}, err
+		}
+
+		forLoopStmt.Statements = append(forLoopStmt.Statements, innerStmt)
+
+		if p.expectCur(token.RParen) {
+			break
+		}
+
+		if err := p.eatDelimiter(); err != nil {
+			return ast.ForLoopStatement{}, err
+		}
+	}
+
+	p.nextToken()
+
+	return forLoopStmt, nil
+}
+
+func (p *Parser) parseFnCall() (ast.FnCall, error) {
+	if !p.expectCur(token.Ident) {
+		return ast.FnCall{}, fmt.Errorf("%d:%d expected 'IDENT' but got '%s'", p.curToken.Line, p.curToken.Col, p.curToken.Type)
+	}
+	fnCall := ast.FnCall{Token: p.curToken, Arguments: []ast.Atom{}}
+	p.nextToken()
+
+	if err := p.eatDelimiter(); err != nil {
+		return ast.FnCall{}, err
+	}
+
+	for {
+		arg, err := p.parseAtomExpression()
+		if err != nil {
+			return ast.FnCall{}, err
+		}
+		fnCall.Arguments = append(fnCall.Arguments, arg)
+
+		if p.expectCur(token.RParen) {
+			break
+		}
+
+		if err := p.eatDelimiter(); err != nil {
+			return ast.FnCall{}, err
+		}
+	}
+
+	p.nextToken()
+
+	return fnCall, nil
 }
 
 // expressions are either lists, or atoms
