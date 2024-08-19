@@ -159,6 +159,8 @@ func (l *Lexer) NextToken() token.Token {
 		ident := l.readIdent()
 		if tokenType, ok := token.LookupIdent(ident); ok {
 			tok = token.NewFromString(tokenType, ident, line, col)
+		} else if isIdentNil(ident) {
+			tok = token.NewFromString(token.Nil, ident, line, col)
 		} else if isIdentInt(ident) {
 			tok = token.NewFromString(token.Int, ident, line, col)
 		} else if isIdentBool(ident) {
@@ -199,6 +201,10 @@ func isIdentInt(ident string) bool {
 		}
 	}
 	return true
+}
+
+func isIdentNil(ident string) bool {
+	return ident == "nil"
 }
 
 func isIdentBool(ident string) bool {

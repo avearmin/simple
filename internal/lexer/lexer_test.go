@@ -374,6 +374,17 @@ else
 				{Type: token.RParen, Literal: ")", Line: 1, Col: 36},
 			},
 		},
+		"nil assignment": {
+			input: "(:= foo nil)",
+			want: []token.Token{
+				{Type: token.LParen, Literal: "(", Line: 1, Col: 0},
+				{Type: token.Assign, Literal: ":=", Line: 1, Col: 1},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 3},
+				{Type: token.Ident, Literal: "foo", Line: 1, Col: 4},
+				{Type: token.Delimiter, Literal: "", Line: 1, Col: 7},
+				{Type: token.Nil, Literal: "nil", Line: 1, Col: 8},
+			},
+		},
 	}
 
 	for name, test := range tests {
