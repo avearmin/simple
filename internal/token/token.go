@@ -43,6 +43,8 @@ const (
 
 	For = "FOR"
 
+	Nil = "NIL"
+
 	Ident = "IDENT"
 )
 
@@ -53,6 +55,7 @@ var identToType = map[string]Type{
 	"fn":     Fn,
 	"return": Return,
 	"for":    For,
+	"nil":    Nil,
 }
 
 type Token struct {
