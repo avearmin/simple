@@ -7,6 +7,7 @@ type Type string
 const (
 	IntegerObj = "INTEGER"
 	BooleanObj = "BOOLEAN"
+	NilObj     = "NIL"
 )
 
 type Object interface {
@@ -26,3 +27,8 @@ type Boolean struct {
 }
 
 func (b Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
+
+type Nil struct{}
+
+func (n Nil) Inspect() string { return "nil" }
+func (n Nil) Type() Type      { return NilObj }
